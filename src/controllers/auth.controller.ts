@@ -1,8 +1,5 @@
 import { Request, Response } from "express";
 import { loginUser, registerUserService, requestOtpManager } from "../services/auth.service";
-import bcrypt from "bcryptjs";
-import { v4 as uuidv4 } from "uuid";
-import { pool } from "../config/connection";
 
 export const login = async (req: Request, res: Response) => {
   try {
