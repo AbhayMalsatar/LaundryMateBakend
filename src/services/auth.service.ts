@@ -39,7 +39,6 @@ export const requestOtpManager = async (mobileno: string) => {
 
 
     const smsResponse = await vonage.sms.send({ to, from, text });
-    console.log(smsResponse);
 
     await pool.query(
       "CALL auth_otp_add($1, $2, $3)",
