@@ -4,10 +4,10 @@ import authMiddleware from "../middleware/auth.middleware";
 const express = require("express");
 const router = express.Router();
 
-router.post("/customers/list",authMiddleware,customerListing);  // 🔐 protected
-router.post("/customers/addedit",authMiddleware,customerAddEdit);  // 🔐 protected
-router.post("/customers/delete",authMiddleware,customerDelete);  // 🔐 protected
-router.post("/customers/getbyID",authMiddleware,customerGetById);  // 🔐 protected
+router.post("/listing",authMiddleware,customerListing);  // 🔐 protected
+router.post("/addedit",authMiddleware,customerAddEdit);  // 🔐 protected
+router.post("/delete",authMiddleware,customerDelete);  // 🔐 protected
+router.post("/getbyID",authMiddleware,customerGetById);  // 🔐 protected
 
 
 
