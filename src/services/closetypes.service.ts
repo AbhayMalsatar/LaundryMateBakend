@@ -1,3 +1,4 @@
+import { UUIDTypes } from "uuid";
 import { commonAddEditService, commonDeleteService, commonGetByIdService, commonListingService } from "./common/common.service";
 
 export const getClothTypeListingService = async (pageSize: number, pageNo: number, search: string, sortBy: string) => {
@@ -11,8 +12,8 @@ export const getClothTypeListingService = async (pageSize: number, pageNo: numbe
 }
 
 export const addEditClothTypeService = async (
-    userId: number,
-    clothTypeId: number | null,
+    userId: UUIDTypes,
+    clothTypeId: UUIDTypes | null,
     clothTypeName: string,
     isactive: boolean
 ) => {
@@ -24,7 +25,7 @@ export const addEditClothTypeService = async (
     }
 }
 
-export const deleteClothTypeService = async (clothTypeId: number) => {
+export const deleteClothTypeService = async (clothTypeId: UUIDTypes) => {
     try {
         const message = await commonDeleteService(clothTypeId, "clothtypes_delete");
         return message ? "Cloth type deleted successfully" : "Failed to delete cloth types";
@@ -34,7 +35,7 @@ export const deleteClothTypeService = async (clothTypeId: number) => {
     }
 }
 
-export const getClothTypeByIdService = async (clothTypeId: number) => {
+export const getClothTypeByIdService = async (clothTypeId: UUIDTypes) => {
     try {
         // Call stored procedure with refcursor
         const result = await commonGetByIdService(clothTypeId, "clothtypes_getbyid");

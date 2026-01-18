@@ -1,3 +1,4 @@
+import { UUIDTypes } from "uuid";
 import { commonAddEditService, commonDeleteService, commonGetByIdService, commonListingService } from "./common/common.service";
 
 export const getCustomerListingService = async (pageSize: number, pageNo: number, search: string, sortBy: string) => {
@@ -10,8 +11,8 @@ export const getCustomerListingService = async (pageSize: number, pageNo: number
 }
 
 export const addEditCustomerService = async (
-    userId: number,
-    customerId: number | null,
+    userId: UUIDTypes,
+    customerId: UUIDTypes | null,
     customerName: string,
     customerShortName: string | null,
     mobileNo: string | null,
@@ -31,7 +32,7 @@ export const addEditCustomerService = async (
     }
 }
 
-export const deleteCustomerService = async (customerId: number) => {
+export const deleteCustomerService = async (customerId: UUIDTypes) => {
     try {
         const result = await commonDeleteService(customerId, "customers_deletebyid");
         return result? "Customer deleted successfully" : "Failed to delete customer";
@@ -40,7 +41,7 @@ export const deleteCustomerService = async (customerId: number) => {
     }
 }
 
-export const getCustomerByIdService = async (customerId: number) => {
+export const getCustomerByIdService = async (customerId: UUIDTypes) => {
     try {
         const result = await commonGetByIdService(customerId, "customers_getbyid");
         return result;
