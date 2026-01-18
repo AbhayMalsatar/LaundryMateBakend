@@ -4,6 +4,7 @@ import authRoutes from "./routes/auth.routes";
 import customerRoutes from "./routes/customer.routes";
 import clothtypesRoutes from "./routes/clothtypes.routes";
 import servicesRoutes from "./routes/services.routes";
+import basePriceRoutes from "./routes/baseprice.routes";
 
 const app = express();
 
@@ -25,5 +26,6 @@ app.use("/api/auth", authRoutes);
 app.use("/api/customers", customerRoutes);
 app.use("/api/clothtypes", clothtypesRoutes);
 app.use("/api/services", servicesRoutes);
+app.use("/api/baseprice", basePriceRoutes);
 
 export default app;

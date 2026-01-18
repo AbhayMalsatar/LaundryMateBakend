@@ -34,10 +34,15 @@ export const commonListingService = async (pageSize: number, pageNo: number, sea
 export const commonGetByIdService = async (id: number, spName: string) => {
     const client = await pool.connect();
     try {
-        const result = await client.query(
-            `CALL ${spName}($1)`,
-            [id]
+        await client.query("BEGIN");
+        await client.query(
+            `CALL ${spName}($1, $2)`,
+            [id, "getbyid_cursor"]
         );
+        const result = await client.query(
+            "FETCH ALL FROM getbyid_cursor"
+        );
+        await client.query("COMMIT");
         return result;
     }
     catch (error) {
@@ -52,8 +57,8 @@ export const commonDeleteService = async (id: number, spName: string) => {
     const client = await pool.connect();
     try {
         await client.query(
-            `CALL ${spName}($1)`,
-            [id]
+            `CALL ${spName}($1, $2)`,
+            [id, "p_message"]
         );
         return "Deleted successfully";
     }
@@ -69,8 +74,9 @@ export const commonAddEditService = async (params: any[], spName: string) => {
     const client = await pool.connect();
     try {
         const placeholders = params.map((_, index) => `$${index + 1}`).join(", ");
+        console.log(`CALL ${spName} (${placeholders})`, params)
         const result = await client.query(
-            `CALL ${spName}(${placeholders})`,
+            `CALL ${spName} (${placeholders})`,
             params
         );
         const message = result?.rows?.[0]?.p_message || "Success";

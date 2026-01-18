@@ -7,24 +7,22 @@ const authMiddleware = (
   next: NextFunction
 ) => {
   const authHeader = req.headers.authorization;
-
   if (!authHeader || !authHeader.startsWith("Bearer ")) {
     return res.status(401).json({
       success: false,
-      message: "Unauthorized",
+      message: "Unauthorized token missing",
     });
   }
-
   const token = authHeader.split(" ")[1];
-
   try {
-    const decoded = jwt.verify(token, process.env.JWT_SECRET as string);
-    (req as any).user = decoded;
+    const decoded:any = jwt.verify(token, process.env.JWT_SECRET as string);
+    (req as any).userId = decoded?.userId;
+    (req as any).roleId = decoded?.roleId;
     next();
   } catch (err) {
     return res.status(401).json({
       success: false,
-      message: "Invalid token",
+      message: err instanceof Error ? err.message : "Invalid token",
     });
   }
 };
