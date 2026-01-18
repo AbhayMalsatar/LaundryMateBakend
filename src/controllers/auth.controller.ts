@@ -4,7 +4,6 @@ import { loginUser, registerUserService, requestOtpManager } from "../services/a
 export const login = async (req: Request, res: Response) => {
   try {
     const { mobileno, password } = req.body;
-    console.log(mobileno, password);
     if (!mobileno || !password) {
       return res.status(400).json({ success: false, message: "Mobile number and password are required" });
     }

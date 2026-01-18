@@ -1,4 +1,3 @@
-const pool = require("../db");
 import { Request, Response } from "express";
 import { addeditServiceService, deleteServiceService, getServiceByIdService, getServicesListingService } from "../services/services.service";
 

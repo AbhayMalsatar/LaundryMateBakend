@@ -25,7 +25,7 @@ export const addEditCustomerService = async (
     image: string | null
 ) => {
     try {
-        const result = await commonAddEditService([ customerId, customerName, customerShortName, mobileNo, email, address1, address2, city, zipCode, note, image, userId], "customers_addedit");
+        const result = await commonAddEditService([ customerId, customerName, customerShortName, mobileNo, email, address1, address2, city, zipCode, note, image, userId, ""], "customers_addedit");
         return result;
     } catch (error) {
         throw error;
@@ -34,8 +34,8 @@ export const addEditCustomerService = async (
 
 export const deleteCustomerService = async (customerId: number) => {
     try {
-        const result = await commonDeleteService(customerId, "customers_delete");
-        return result;
+        const result = await commonDeleteService(customerId, "customers_deletebyid");
+        return result? "Customer deleted successfully" : "Failed to delete customer";
     } catch (error) {
         throw error;
     }
