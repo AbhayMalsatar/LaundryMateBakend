@@ -1,3 +1,4 @@
+import { UUIDTypes } from "uuid";
 import { commonAddEditService, commonDeleteService, commonGetByIdService, commonListingService } from "./common/common.service";
 
 export const getCustomerListingService = async (pageSize: number, pageNo: number, search: string, sortBy: string) => {
@@ -10,8 +11,8 @@ export const getCustomerListingService = async (pageSize: number, pageNo: number
 }
 
 export const addEditCustomerService = async (
-    userId: number,
-    customerId: number | null,
+    userId: UUIDTypes,
+    customerId: UUIDTypes | null,
     customerName: string,
     customerShortName: string | null,
     mobileNo: string | null,

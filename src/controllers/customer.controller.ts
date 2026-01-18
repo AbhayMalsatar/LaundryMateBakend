@@ -1,6 +1,7 @@
 const pool = require("../db");
 import { Request, Response } from "express";
 import { addEditCustomerService, deleteCustomerService, getCustomerByIdService, getCustomerListingService } from "../services/customer.service";
+import { customerAddEditInput } from "../DTO/customers.dto";
 
 // Customer Listing
 export const customerListing = async (req: Request, res: Response) => {
@@ -25,10 +26,7 @@ export const customerListing = async (req: Request, res: Response) => {
 export const customerAddEdit = async (req: Request, res: Response) => {
     try {
         const userId = (req as any).user.user_id; // from JWT
-        const { customerId = null, customerName, customerShortName = null, mobileNo = null, email = null, address1 = null, address2 = null, city = null, zipCode = null, note = null, image = null } = req.body;
-        if (!customerName) {
-            return res.status(400).json({ success: false, message: "Customer name is required" });
-        }
+        const { customerId = null, customerName, customerShortName = null, mobileNo = null, email = null, address1 = null, address2 = null, city = null, zipCode = null, note = null, image = null } = customerAddEditInput.parse(req.body);
         const result = await addEditCustomerService(
             userId,
             customerId,
