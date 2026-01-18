@@ -1,67 +1,57 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { loginUser, registerUserService, requestOtpManager } from "../services/auth.service";
+import { loginInput, registerUserInput, requestOtpInput } from "../DTO/auth.dto";
+import ApiResponse from "../utils/ApiResponse";
 
-export const login = async (req: Request, res: Response) => {
+export const login = async (req: Request, res: Response, next:NextFunction) => {
   try {
-    const { mobileno, password } = req.body;
-    if (!mobileno || !password) {
-      return res.status(400).json({ success: false, message: "Mobile number and password are required" });
-    }
+    const { mobileno, password } = loginInput.parse(req.body);
     const data = await loginUser(mobileno, password);
-    res.status(200).json({
-      success: true,
+    ApiResponse.success(res, {
       message: "Login successful",
       token: data.token
     });
   } catch (error: any) {
-    res.status(401).json({
-      success: false,
-      message: error.message
-    });
-
+    next(error);
   }
 };
 
-export const requestOtp = async (req: Request, res: Response) => {
+export const requestOtp = async (req: Request, res: Response, next:NextFunction) => {
   try {
-    const { mobileno } = req.body;
+    const { mobileno } = requestOtpInput.parse(req.body);
 
-    if (!mobileno) {
-      return res.status(400).json({ message: "Mobile number required" });
-    }
     const otp = await requestOtpManager(mobileno);
     if (otp) {
-      res.json({
-        success: true,
+      ApiResponse.success(res, {
         message: "OTP sent successfully",
       });
     } else {
-      res.status(500).json({ message: "OTP generation failed" });
+      ApiResponse.error(res, {
+        message: "OTP generation failed",
+        statusCode: 500,
+      });
     }
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: "OTP generation failed" });
+    next(err);
   }
 };
 
-export const registerUser = async (req: Request, res: Response) => {
+export const registerUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const { username, email, password, mobile, otp } = req.body;
-    console.log(req.body)
-    if (!username || !email || !password || !mobile || !otp) {
-      return res.status(400).json({ message: "All fields required" });
-    }
+    const { username, email, password, mobile, otp } = registerUserInput.parse(req.body);
 
     const isUserRegistered = await registerUserService(username, email, password, mobile, otp);
     if (!isUserRegistered.isValid) {
-      return res.status(400).json({ message: isUserRegistered.message });
+      ApiResponse.error(res, {
+        message: isUserRegistered.message,
+        statusCode: 400,
+      });
+      return;
     }
-    console.log("isUserRegistered", isUserRegistered);
-    res.status(201).json({
-      success: true,
+    ApiResponse.success(res, {
       message: "User registered successfully",
     });
   } catch (err) {
-    res.status(500).json({ message: err});
+    next(err);
   }
 };

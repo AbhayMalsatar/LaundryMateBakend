@@ -2,7 +2,7 @@ import { z } from "zod";
 
 const customerAddEditInput = z.object({
     customerId: z.uuid().optional().nullable(),
-    customerName: z.string().min(1, "Customer name is required"),
+    customerName: z.string("Customer name is required").min(1, "Customer name is required"),
     customerShortName: z.string().optional().nullable(),
     mobileNo: z.string().optional().nullable(),
     email: z.email("Invalid email format").optional().nullable(),
@@ -14,4 +14,12 @@ const customerAddEditInput = z.object({
     image: z.string().optional().nullable()
 });
 
-export { customerAddEditInput };
+const customerGetByIdInput = z.object({
+    customerId: z.uuid("Customer ID is required"),
+});
+
+const customerDeleteInput = z.object({
+    customerId: z.uuid("Customer ID is required"),
+});
+
+export { customerAddEditInput, customerGetByIdInput, customerDeleteInput };

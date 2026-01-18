@@ -1,3 +1,4 @@
+import { UUIDTypes } from "uuid";
 import { pool } from "../../config/connection";
 
 export const commonListingService = async (pageSize: number, pageNo: number, search: string, sortBy: string, spName: string) => {
@@ -31,7 +32,7 @@ export const commonListingService = async (pageSize: number, pageNo: number, sea
     }
 }
 
-export const commonGetByIdService = async (id: number, spName: string) => {
+export const commonGetByIdService = async (id: UUIDTypes, spName: string) => {
     const client = await pool.connect();
     try {
         await client.query("BEGIN");
@@ -53,7 +54,7 @@ export const commonGetByIdService = async (id: number, spName: string) => {
     }
 }
 
-export const commonDeleteService = async (id: number, spName: string) => {
+export const commonDeleteService = async (id: UUIDTypes, spName: string) => {
     const client = await pool.connect();
     try {
         await client.query(

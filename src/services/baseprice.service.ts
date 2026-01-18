@@ -1,3 +1,4 @@
+import { UUIDTypes } from "uuid";
 import { commonAddEditService, commonDeleteService, commonGetByIdService, commonListingService } from "./common/common.service";
 
 export const getBasePriceListingService = async (pageSize: number, pageNo: number, search: string, sortBy: string) => {
@@ -11,10 +12,10 @@ export const getBasePriceListingService = async (pageSize: number, pageNo: numbe
 }
 
 export const addEditBasePriceService = async (
-    userId: number,
-    basePriceId: number | null,
-    clothTypeId: number,
-    serviceId: number,
+    userId: UUIDTypes,
+    basePriceId: UUIDTypes | null,
+    clothTypeId: UUIDTypes,
+    serviceId: UUIDTypes,
     basePrice: number,
     isactive: boolean
 ) => {
@@ -27,7 +28,7 @@ export const addEditBasePriceService = async (
     }
 }
 
-export const deleteBasePriceService = async (basePriceId: number) => {
+export const deleteBasePriceService = async (basePriceId: UUIDTypes) => {
     try {
         const message = await commonDeleteService(basePriceId, "baseprice_delete");
         return message ? "Base price deleted successfully" : "Failed to delete base price";
@@ -37,7 +38,7 @@ export const deleteBasePriceService = async (basePriceId: number) => {
     }
 }
 
-export const getBasePriceByIdService = async (basePriceId: number) => {
+export const getBasePriceByIdService = async (basePriceId: UUIDTypes) => {
     try {
         // Call stored procedure with refcursor
         const result = await commonGetByIdService(basePriceId, "baseprice_getbyid");

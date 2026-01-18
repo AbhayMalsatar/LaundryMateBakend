@@ -32,7 +32,7 @@ export const addEditCustomerService = async (
     }
 }
 
-export const deleteCustomerService = async (customerId: number) => {
+export const deleteCustomerService = async (customerId: UUIDTypes) => {
     try {
         const result = await commonDeleteService(customerId, "customers_deletebyid");
         return result? "Customer deleted successfully" : "Failed to delete customer";
@@ -41,7 +41,7 @@ export const deleteCustomerService = async (customerId: number) => {
     }
 }
 
-export const getCustomerByIdService = async (customerId: number) => {
+export const getCustomerByIdService = async (customerId: UUIDTypes) => {
     try {
         const result = await commonGetByIdService(customerId, "customers_getbyid");
         return result;

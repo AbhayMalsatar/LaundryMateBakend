@@ -1,4 +1,6 @@
+import { UUID } from "node:crypto";
 import { commonAddEditService, commonDeleteService, commonGetByIdService, commonListingService } from "./common/common.service";
+import { UUIDTypes } from "uuid";
 
 export const getServicesListingService = async (pageSize: number, pageNo: number, search: string, sortBy: string) => {
     try {
@@ -11,8 +13,8 @@ export const getServicesListingService = async (pageSize: number, pageNo: number
 }
 
 export const addeditServiceService = async (
-    userId: number,
-    serviceId: number | null,
+    userId: UUIDTypes,
+    serviceId: UUIDTypes | null,
     serviceName: string,
     isactive: boolean | false,
 ) => {
@@ -25,7 +27,7 @@ export const addeditServiceService = async (
     }
 }
 
-export const deleteServiceService = async (serviceId: number) => {
+export const deleteServiceService = async (serviceId: UUIDTypes) => {
     try {
         const message = await commonDeleteService(serviceId, "services_delete");
         return message ? "Service deleted successfully" : "Failed to delete service";
@@ -35,7 +37,7 @@ export const deleteServiceService = async (serviceId: number) => {
     }
 }
 
-export const getServiceByIdService = async (serviceId: number) => {
+export const getServiceByIdService = async (serviceId: UUIDTypes) => {
     try {
         // Call stored procedure with refcursor
         const result = await commonGetByIdService(serviceId, "services_getbyid");

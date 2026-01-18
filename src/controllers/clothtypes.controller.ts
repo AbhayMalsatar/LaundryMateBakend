@@ -1,35 +1,29 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { addEditClothTypeService, deleteClothTypeService, getClothTypeByIdService, getClothTypeListingService } from "../services/closetypes.service";
+import { listingInput } from "../DTO/common.dto";
+import { clothTypeAddEditInput, clothTypeDeleteInput, clothTypeGetByIdInput } from "../DTO/clothtypes.dto";
+import ApiResponse from "../utils/ApiResponse";
 
 // Cloth Type Listing
-export const clothTypeListing = async (req: Request, res: Response) => {
+export const clothTypeListing = async (req: Request, res: Response, next:NextFunction) => {
     try {
-        const { pageSize = null, pageNo = null, search = null, sortBy = "adddate desc" }: any = req.body ?? {};
+        const { pageSize = null, pageNo = null, search = null, sortBy = "adddate desc" }: any = listingInput.parse(req.body ?? {});
         const result = await getClothTypeListingService(pageSize, pageNo, search, sortBy);
-        res.status(200).json({
-            success: true,
-            totalRecords: result.rowCount,
+        ApiResponse.success(res, {
+            totalRecords: result.rowCount || 0,
             data: result.rows,
         });
     } catch (error: any) {
-        console.error(error);
-        res.status(500).json({
-            success: false,
-            message: error.message || "Failed to fetch cloth types",
-        });
+       next(error);
     }
 }
 
 // Cloth Type Add/Edit
-export const clothTypeAddEdit = async (req: Request, res: Response) => {
-
+export const clothTypeAddEdit = async (req: Request, res: Response, next:NextFunction) => {
     try {
-        const userId = (req as any).user.user_id; // from JWT_EXPIRES_IN
-        const { clothTypeId = null, clothTypeName, isactive = true } = req.body;
-        
-        if (!clothTypeName) {
-            return res.status(400).json({ success: false, message: "Cloth type name is required" });
-        }
+        const userId = (req as any).userId; // from JWT_EXPIRES_IN
+        const { clothTypeId = null, clothTypeName, isactive = true } = clothTypeAddEditInput.parse(req.body)
+    
         // Call the service to add/edit cloth type
         const result = await addEditClothTypeService(
             userId,
@@ -37,64 +31,47 @@ export const clothTypeAddEdit = async (req: Request, res: Response) => {
             clothTypeName,
             isactive
         );
-        res.status(200).json({
-            success: true,
+        ApiResponse.success(res, {
             message: result,
         });
 
     }
     catch (error: any) {
-        console.error(error);
-        res.status(500).json({
-            success: false,
-            message: error.message || "Failed to Add or Edit cloth types",
-        });
+       next(error);
     }
 };
 
 // Cloth Type Delete
-export const clothTypeDelete = async (req: Request, res: Response) => {
+export const clothTypeDelete = async (req: Request, res: Response, next:NextFunction) => {
     try {
-        const { clothTypeId } = req.params;
-        if (!clothTypeId) {
-            return res.status(400).json({ success: false, message: "Cloth type ID is required" });
-        }
+        const { clothTypeId } = clothTypeDeleteInput.parse(req.body);
         // Here you would call a service to delete the cloth type
-        const message = await deleteClothTypeService(Number(clothTypeId));
-        res.status(200).json({
-            success: true,
+        const message = await deleteClothTypeService(clothTypeId);
+        ApiResponse.success(res, {
             message: message,
         });
     }
     catch (error: any) {
-        console.error(error);
-        res.status(500).json({
-            success: false,
-            message: error.message || "Failed to delete cloth type",
-        });
+       next(error);
     }
 }
 
 // Cloth Type Get By ID
-export const clothTypeGetByID = async (req: Request, res: Response) => {
+export const clothTypeGetByID = async (req: Request, res: Response, next:NextFunction) => {
     try {
-        const { clothTypeId } = req.params;
-        if (!clothTypeId) {
-            return res.status(400).json({ success: false, message: "Cloth type ID is required" });
-        }
-        const result = await getClothTypeByIdService(Number(clothTypeId));
+        const { clothTypeId } = clothTypeGetByIdInput.parse(req.body);
+        const result = await getClothTypeByIdService(clothTypeId);
         if (result.rowCount === 0) {
-            return res.status(404).json({ success: false, message: "Cloth type not found" });
+            ApiResponse.error(res, {
+                message: "Cloth type not found",
+                statusCode: 404,
+            });
+            return;
         }
-        res.status(200).json({
-            success: true,
+        ApiResponse.success(res, {
             data: result.rows[0],
         });
     } catch (error: any) {
-        console.error(error);
-        res.status(500).json({
-            success: false,
-            message: error.message || "Failed to fetch cloth type",
-        });
+        next(error);
     }
 }

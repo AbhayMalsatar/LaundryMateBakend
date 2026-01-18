@@ -1,30 +1,27 @@
-import { Request, Response } from "express";
+import { NextFunction, Request, Response } from "express";
 import { addEditCustomerService, deleteCustomerService, getCustomerByIdService, getCustomerListingService } from "../services/customer.service";
-import { customerAddEditInput } from "../DTO/customers.dto";
+import { customerAddEditInput, customerDeleteInput, customerGetByIdInput } from "../DTO/customers.dto";
+import { listingInput } from "../DTO/common.dto";
+import ApiResponse from "../utils/ApiResponse";
 
 // Customer Listing
-export const customerListing = async (req: Request, res: Response) => {
+export const customerListing = async (req: Request, res: Response, next:NextFunction) => {
     try {
-        const { pageSize = null, pageNo = null, search = null, sortBy = "adddate desc" }: any = req.body ?? {};
+        const { pageSize = null, pageNo = null, search = null, sortBy = "adddate desc" }: any = listingInput.parse(req.body ?? {});
         const result = await getCustomerListingService(pageSize, pageNo, search, sortBy);
-        res.status(200).json({
-            success: true,
-            totalRecords: result.rowCount,
+        ApiResponse.success(res, {
+            totalRecords: result.rowCount || 0,
             data: result.rows,
         });
     } catch (error: any) {
-        console.error(error);
-        res.status(500).json({
-            success: false,
-            message: error.message || "Failed to fetch customers",
-        });
+        next(error);
     }
 };
 
 // Customer Add/Edit
-export const customerAddEdit = async (req: Request, res: Response) => {
+export const customerAddEdit = async (req: Request, res: Response, next:NextFunction) => {
     try {
-        const userId = (req as any).user.user_id || null; // from JWT
+        const userId = (req as any).userId || null; // from JWT
         const { customerId = null, customerName, customerShortName = null, mobileNo = null, email = null, address1 = null, address2 = null, city = null, zipCode = null, note = null, image = null } = customerAddEditInput.parse(req.body);
         const result = await addEditCustomerService(
             userId,
@@ -40,66 +37,45 @@ export const customerAddEdit = async (req: Request, res: Response) => {
             note,
             image
         );
-        res.status(200).json({
-            success: true,
+        ApiResponse.success(res, {
             message: result,
         });
     } catch (error: any) {
-        console.error(error);
-        res.status(500).json({
-            success: false,
-            message: error.message || "Failed to Add or Edit customers",
-        });
+        next(error);
     }
 };
 
 // Customer Delete
-export const customerDelete = async (req: Request, res: Response) => {
+export const customerDelete = async (req: Request, res: Response, next:NextFunction) => {
     try {
-        const { customerId } = req.body;
-        if (!customerId) {
-            return res.status(400).json({ success: false, message: "Customer ID is required" });
-        }
+        const { customerId } = customerDeleteInput.parse(req.body);
         const result = await deleteCustomerService(customerId);
-        res.status(200).json({
-            success: true,
+
+        ApiResponse.success(res, {
             message: result,
         });
-
     } catch (error: any) {
-        console.error(error);
-        res.status(500).json({
-            success: false,
-            message: error.message || "Failed to delete customer",
-        });
+       next(error);
     }
 };
 
-export const customerGetById = async (req: Request, res: Response) => {
+export const customerGetById = async (req: Request, res: Response, next:NextFunction) => {
     try {
-        const { customerId } = req.body;
-        if (!customerId) {
-            return res.status(400).json({ success: false, message: "Customer ID is required" });
-        }
+        const { customerId } = customerGetByIdInput.parse(req.body);
         const result = await getCustomerByIdService(customerId);
         if (result.rows.length === 0) {
-            res.status(404).json({
-                success: false,
+            ApiResponse.error(res, {
                 message: "Customer not found",
+                statusCode: 404,
             });
         } else {
-            res.status(200).json({
-                success: true,
+            ApiResponse.success(res, {
                 data: result.rows[0],
             });
         }
 
     } catch (error: any) {
-        console.error(error);
-        res.status(500).json({
-            success: false,
-            message: error.message || "Failed to get customer by ID",
-        });
+        next(error);
     }
 }
 
